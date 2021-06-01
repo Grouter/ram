@@ -2,47 +2,38 @@ use std::io::stdin;
 use std::time::Instant;
 
 use crate::ProgramState;
+use crate::parser::InstructionLine;
 use crate::operations::FUNCS_LOOKUP;
-use crate::token::{Token, TokenVal};
 
-pub fn simulate(tokens: &Vec<Token>, state: &mut ProgramState) {
+pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
 
-    let mut ic= 0u32;
     let mut instructions = 0u32;
-    let token_size = tokens.len() as u32;
+    let line_size = line.len() as u32;
 
     let now = Instant::now();
 
-    while ic < token_size {
-        let token = &tokens[ic as usize];
+    while state.ic < line_size {
+        let in_op_pair = &line[state.ic as usize];
 
-        match &token.id {
-            crate::token::TokenType::Operation => {
-
-                if let TokenVal::Value(operation) = &token.value {
-                    match FUNCS_LOOKUP.get(operation.as_str()) {
-                        Some(f) => {
-                            instructions += 1;
-                            (f)(&tokens, &mut ic, state);
-                        },
-                        None => println!("Unknown operation: {}", operation)
-                    }
-                }
-
-            }
-            _ => {}
+        // Fetch a function that handles the instrution.
+        match FUNCS_LOOKUP.get(in_op_pair.instruction.as_str()) {
+            Some(f) => {
+                instructions += 1;
+                (f)(&in_op_pair.operand, state);
+            },
+            None => println!("Unknown instruction: {}", in_op_pair.instruction)
         }
 
-        ic += 1;
+        state.ic += 1;
 
         /*let mut i = 0usize;
         for r in &state.registers {
             println!("[{}] {}", i, r);
             i += 1;
-        }*/
+        }
 
-        //let mut buff: String = String::new();
-        //stdin().read_line(&mut buff).expect("ASD");
+        let mut buff: String = String::new();
+        stdin().read_line(&mut buff).expect("Err");*/
     }
 
     println!("==========================");

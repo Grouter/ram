@@ -5,9 +5,8 @@ use std::collections::HashMap;
 use std::fs;
 
 use simulation::simulate;
+use parser::parse;
 use token::tokenize;
-
-use crate::token::Token;
 
 pub const DEBUG_MODE: bool = false;
 
@@ -25,6 +24,7 @@ mod simulation;
 mod operations;
 
 pub struct ProgramState {
+    pub ic: u32,
     pub input: Vec<i32>,
     pub input_pointer: usize,
     pub output: Vec<i32>,
@@ -37,6 +37,7 @@ fn main() {
         .expect("Something went wrong reading the file");
 
     let mut state = ProgramState {
+        ic: 0,
         input: vec![4],
         input_pointer: 0,
         output: Vec::new(),
@@ -44,7 +45,8 @@ fn main() {
         labels: HashMap::new()
     };
 
-    let tokens: Vec<Token> = tokenize(&contents, &mut state.labels);
+    let tokens = tokenize(&contents);
+    let line = parse(&tokens, &mut state.labels);
 
-    //simulate(&tokens, &mut state);
+    simulate(&line, &mut state);
 }

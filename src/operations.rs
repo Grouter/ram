@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use crate::ProgramState;
-use crate::token::Token;
+use crate::parser::Operand;
 
-pub type OpFn = fn(&Vec<Token>, &mut u32, &mut ProgramState);
+pub type OpFn = fn(&Operand, &mut ProgramState);
 
 lazy_static! {
     pub static ref FUNCS_LOOKUP: HashMap<&'static str, OpFn> = {
@@ -15,7 +15,6 @@ lazy_static! {
         map.insert("SUB", sub as OpFn);
         map.insert("MUL", mul as OpFn);
         map.insert("DIV", div as OpFn);
-        map.insert("DEFINE", define as OpFn);
         map.insert("JZERO", jzero as OpFn);
         map.insert("JUMP", jump as OpFn);
         map.insert("WRITE", write as OpFn);
@@ -23,170 +22,107 @@ lazy_static! {
     };
 }
 
-fn fetch_value(token: &Token, registers: &Vec<i32>) -> Option<i32> {
-    let value = token.value.to_number();
+fn fetch(operand: &Operand, registers: &Vec<i32>) -> i32 {
+    match operand {
+        Operand::Const(n) => *n as i32,
+        Operand::Register(n) => registers[*n as usize],
+        Operand::Pointer(n) => {
+            let register = registers[*n as usize];
 
-    match token.id {
-        crate::token::TokenType::Register => {
-            Some(registers[value as usize])
-        }
-        crate::token::TokenType::Constant => {
-            Some(value as i32)
-        }
-        crate::token::TokenType::Pointer => {
-            let register = registers[value as usize];
-
-            Some(registers[register as usize])
-        }
-        _ => None
+            registers[register as usize]
+        },
+        _ => panic!(format!("Cannot fetch a value from {}", operand))
     }
 }
 
-pub fn load(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn load(operand: &Operand, state: &mut ProgramState) {
+    let value = fetch(operand, &state.registers);
 
-    match fetch_value(operand, &state.registers) {
-        Some(value) => {
-            debug_log!("[LOAD] {} to ACC({})", value, state.registers[0]);
-            state.registers[0] = value;
-        }
-        None => panic!("Invlaid operand type for LOAD.")
-    }
+    debug_log!("[LOAD] {} to ACC", value);
+
+    state.registers[0] = value;
 }
 
-pub fn read(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn read(operand: &Operand, state: &mut ProgramState) {
 
-    let register = operand.value.to_number() as usize;
+    let register = operand.to_number() as usize;
 
     if state.input_pointer >= state.input.len() {
-        debug_log!("[READ] INPUT_C is out of bounds... Reading 0.");
+        debug_log!("[READ] input tape head is out of bounds... Reading 0.");
         state.registers[register] = 0;
     }
     else {
-        debug_log!("[READ] Read {} to register {}", state.input[state.input_pointer], register);
+        debug_log!("[READ] {} to register {}", state.input[state.input_pointer], register);
 
         state.registers[register] = state.input[state.input_pointer];
         state.input_pointer += 1;
     }
-
 }
 
-pub fn store(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
-
-    let register = operand.value.to_number() as usize;
+pub fn store(operand: &Operand, state: &mut ProgramState) {
+    let register = operand.to_number() as usize;
 
     debug_log!("[STORE] {} to register {}", state.registers[0], register);
     state.registers[register] = state.registers[0];
 }
 
-pub fn add(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn add(operand: &Operand, state: &mut ProgramState) {
+    let value = fetch(operand, &state.registers);
 
-    match fetch_value(operand, &state.registers) {
-        Some(value) => {
-            debug_log!("[ADD] {} to ACC({})", value, state.registers[0]);
-            state.registers[0] += value;
-        }
-        None => panic!("Invlaid operand type for ADD.")
-    }
+    debug_log!("[ADD] {} to ACC({})", value, state.registers[0]);
+    
+    state.registers[0] += value
 }
 
-pub fn sub(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn sub(operand: &Operand, state: &mut ProgramState) {
+    let value = fetch(operand, &state.registers);
 
-    match fetch_value(operand, &state.registers) {
-        Some(value) => {
-            debug_log!("[SUB] {} from ACC({})", value, state.registers[0]);
-            state.registers[0] -= value;
-        }
-        _ => panic!("Invlaid operand type for SUB.")
-    }
+    debug_log!("[SUB] {} from ACC({})", value, state.registers[0]);
+    
+    state.registers[0] -= value
 }
 
-pub fn mul(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn mul(operand: &Operand, state: &mut ProgramState) {
+    let value = fetch(operand, &state.registers);
 
-    match fetch_value(operand, &state.registers) {
-        Some(value) => {
-            debug_log!("[MUL] ACC({}) by {}", state.registers[0], value);
-            state.registers[0] *= value;
-        }
-        _ => panic!("Invlaid operand type for MUL.")
-    }
+    debug_log!("[MUL] {} by ACC({})", value, state.registers[0]);
+    
+    state.registers[0] *= value
 }
 
-pub fn div(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn div(operand: &Operand, state: &mut ProgramState) {
+    let value = fetch(operand, &state.registers);
 
-    match fetch_value(operand, &state.registers) {
-        Some(value) => {
-            debug_log!("[DUV] ACC({}) by {}", state.registers[0], value);
-
-            assert!(value != 0, "Attempted to divide by zero");
-
-            state.registers[0] /= value;
-        }
-        _ => panic!("Invlaid operand type for DIV.")
-    }
+    debug_log!("[DIV] ACC({}) by {}", value, state.registers[0]);
+    
+    state.registers[0] /= value
 }
 
-pub fn define(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
-
-    debug_log!("[DEFINE] Inserting new label {} to ic {}", operand.value.to_string(), *ic + 1);
-    state.labels.insert(operand.value.to_value(), *ic + 1);
-}
-
-pub fn jzero(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
-
-    let target_ic = match state.labels.get(&operand.value.to_value()) {
-        Some(ic) => ic,
-        None => panic!("Cannot jump to an invalid label!")
-    };
+pub fn jzero(operand: &Operand, state: &mut ProgramState) {
+    let index = operand.to_number();
 
     if state.registers[0] == 0 {
-        debug_log!("[JZERO] Jumping to {} on ic {}", operand.value.to_value(), *target_ic);
-        *ic = *target_ic;
+        debug_log!("[JZERO] Jumping to {}", index);
+
+        state.ic = index - 1;
+    }
+    else {
+        debug_log!("[JZERO] Condition not met");
     }
 }
 
-pub fn jump(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn jump(operand: &Operand, state: &mut ProgramState) {
+    let index = operand.to_number();
 
-    let target_ic = match state.labels.get(&operand.value.to_value()) {
-        Some(ic) => ic,
-        None => panic!("Cannot jump to an invalid label!")
-    };
-
-    debug_log!("[JUMP] Jumping to {} on ic {}", operand.value.to_value(), *target_ic);
-    *ic = *target_ic;
+    debug_log!("[JUMP] Jumping to {}", index);
+    
+    state.ic = index - 1;
 }
 
-pub fn write(tokens: &Vec<Token>, ic: &mut u32, state: &mut ProgramState) {
-    *ic += 1;
-    let operand = &tokens[*ic as usize];
+pub fn write(operand: &Operand, state: &mut ProgramState) {
+    let value = fetch(operand, &state.registers);
 
-    match fetch_value(operand, &state.registers) {
-        Some(value) => {
-            debug_log!("[WRITE] {}", value);
+    debug_log!("[WRITE] {}", value);
 
-            state.output.push(value);
-
-            state.registers[0] /= value;
-        }
-        _ => panic!("Invlaid operand type for WRITE.")
-    }
+    state.output.push(value);
 }
