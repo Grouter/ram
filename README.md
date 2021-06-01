@@ -4,7 +4,7 @@
 * [ ] HALT
 * [ ] JGZERO
 * [ ] Simulate register access times
-* [ ] Grammars
+* [ ] Grammars (current syntax error checking is very bad)
 * [ ] TUI and editor
 * [ ] Complexity calculation (logarithmic)
 
