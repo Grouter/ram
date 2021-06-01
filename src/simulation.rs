@@ -7,7 +7,7 @@ use crate::operations::FUNCS_LOOKUP;
 
 pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
 
-    let mut instructions = 0u32;
+    let mut evaluated_instructions = 0u32;
     let line_size = line.len() as u32;
 
     let now = Instant::now();
@@ -18,7 +18,7 @@ pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
         // Fetch a function that handles the instrution.
         match FUNCS_LOOKUP.get(in_op_pair.instruction.as_str()) {
             Some(f) => {
-                instructions += 1;
+                evaluated_instructions += 1;
                 (f)(&in_op_pair.operand, state);
             },
             None => println!("Unknown instruction: {}", in_op_pair.instruction)
@@ -37,7 +37,7 @@ pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
     }
 
     println!("==========================");
-    println!("Evaluated {} instructions", instructions);
+    println!("Evaluated {} instructions", evaluated_instructions);
     println!("Duration {} micros", now.elapsed().as_micros());
 
     println!("INPUT:");
