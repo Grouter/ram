@@ -14,16 +14,22 @@ pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
     let mut evaluated_instructions = 0u32;
     let line_size = line.len() as u32;
 
-    let now = Instant::now();
+    let program_timer = Instant::now();
+    let mut instruction_timer: Instant;
+
+    let mut instruction_duration_micros_sum = 0u128;
 
     while state.ic < line_size {
         let in_op_pair = &line[state.ic as usize];
 
-        // Fetch a function that handles the instrution.
+        // Fetch a function that handles the instruction.
         match FUNCS_LOOKUP.get(in_op_pair.instruction.as_str()) {
             Some(f) => {
                 evaluated_instructions += 1;
+
+                instruction_timer = Instant::now();
                 (f)(&in_op_pair.operand, state);
+                instruction_duration_micros_sum += instruction_timer.elapsed().as_micros();
             },
             None => println!("Unknown instruction: {}", in_op_pair.instruction)
         }
@@ -47,7 +53,11 @@ pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
 
     println!("===== Result =====");
     println!("Evaluated {} instructions", evaluated_instructions);
-    println!("Duration {} micros", now.elapsed().as_micros());
+    println!("Duration {} micros", program_timer.elapsed().as_micros());
+    println!(
+        "Average instruction duration: {} micros",
+        instruction_duration_micros_sum as f32 / evaluated_instructions as f32
+    );
 
     println!("INPUT:");
     let mut i = 0usize;
