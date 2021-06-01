@@ -1,0 +1,13 @@
+READ 1
+LOAD 1
+STORE 2
+START:
+    LOAD 1
+    SUB =1
+    STORE 1
+    JZERO END
+    MUL 2
+    STORE 2
+    JUMP START
+END:
+    WRITE 2
