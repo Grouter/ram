@@ -33,8 +33,8 @@ impl Display for Token {
 }
 
 pub fn tokenize(content: &str) -> Vec<Token> {
-    // This regex for now subtitues the proper grammer check.
-    // I think this syntax is so primitive that regex mathing is more than enough.
+    // This regex for now substitutes the proper grammar check.
+    // I think this syntax is so primitive that regex matching is more than enough.
     let token_pattern = Regex::new(PATTERN).unwrap();
     
     let mut tokens: Vec<Token> = Vec::new();

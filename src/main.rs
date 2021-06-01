@@ -7,11 +7,11 @@ use simulation::simulate;
 use parser::{dump_instruction_line, parse};
 use token::{dump_tokens, tokenize};
 
-pub const   VERBOSE_MODE: bool =            true;
-pub const   DUMP_REGISTERS: bool =          false;
-const       DUMP_TOKENS: bool =             false;
-const       DUMP_ISNTRUCTION_LINE: bool =   false;
-pub const   STEP_DEBUG: bool =              false;
+pub const   VERBOSE_MODE: bool =            true;   // Logs every instruction
+pub const   DUMP_REGISTERS: bool =          false;  // Dumps registers after each instruction
+const       DUMP_TOKENS: bool =             false;  // Dumps tokens after tokenizing
+const       DUMP_INSTRUCTION_LINE: bool =   false;  // Dumps instruction line after parsing
+pub const   STEP_DEBUG: bool =              false;  // Wait for user ENTER after each instruction
 
 const REGISTER_COUNT: usize = 5;
 
@@ -57,7 +57,7 @@ fn main() {
 
     let line = parse(&tokens);
 
-    if DUMP_ISNTRUCTION_LINE {
+    if DUMP_INSTRUCTION_LINE {
         dump_instruction_line(&line);
     }
 
