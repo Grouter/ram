@@ -9,6 +9,7 @@ use parser::parse;
 use token::tokenize;
 
 pub const DEBUG_MODE: bool = false;
+const REGISTER_COUNT: usize = 5;
 
 macro_rules! debug_log {
     ($($rest:tt)*) => {
@@ -41,7 +42,7 @@ fn main() {
         input: vec![4],
         input_pointer: 0,
         output: Vec::new(),
-        registers: vec![0; 5],
+        registers: vec![0; REGISTER_COUNT],
         labels: HashMap::new()
     };
 
