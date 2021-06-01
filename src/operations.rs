@@ -8,15 +8,15 @@ pub type OpFn = fn(&Operand, &mut ProgramState);
 lazy_static! {
     pub static ref FUNCS_LOOKUP: HashMap<&'static str, OpFn> = {
         let mut map = HashMap::new();
-        map.insert("LOAD", load as OpFn);
+        map.insert("LOAD",  load as OpFn);
         map.insert("STORE", store as OpFn);
-        map.insert("READ", read as OpFn);
-        map.insert("ADD", add as OpFn);
-        map.insert("SUB", sub as OpFn);
-        map.insert("MUL", mul as OpFn);
-        map.insert("DIV", div as OpFn);
+        map.insert("READ",  read as OpFn);
+        map.insert("ADD",   add as OpFn);
+        map.insert("SUB",   sub as OpFn);
+        map.insert("MUL",   mul as OpFn);
+        map.insert("DIV",   div as OpFn);
         map.insert("JZERO", jzero as OpFn);
-        map.insert("JUMP", jump as OpFn);
+        map.insert("JUMP",  jump as OpFn);
         map.insert("WRITE", write as OpFn);
         map
     };

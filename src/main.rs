@@ -4,15 +4,20 @@ extern crate lazy_static;
 use std::fs;
 
 use simulation::simulate;
-use parser::parse;
-use token::tokenize;
+use parser::{dump_instruction_line, parse};
+use token::{dump_tokens, tokenize};
 
-pub const DEBUG_MODE: bool = false;
+pub const   VERBOSE_MODE: bool =            true;
+pub const   DUMP_REGISTERS: bool =          false;
+const       DUMP_TOKENS: bool =             false;
+const       DUMP_ISNTRUCTION_LINE: bool =   false;
+pub const   STEP_DEBUG: bool =              false;
+
 const REGISTER_COUNT: usize = 5;
 
 macro_rules! debug_log {
     ($($rest:tt)*) => {
-        if crate::DEBUG_MODE {
+        if crate::VERBOSE_MODE {
             std::println!($($rest)*);
         }
     }
@@ -44,7 +49,16 @@ fn main() {
     };
 
     let tokens = tokenize(&contents);
+
+    if DUMP_TOKENS {
+        dump_tokens(&tokens);
+    }
+
     let line = parse(&tokens);
+
+    if DUMP_ISNTRUCTION_LINE {
+        dump_instruction_line(&line);
+    }
 
     simulate(&line, &mut state);
 }

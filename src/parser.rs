@@ -34,7 +34,7 @@ impl Operand {
 impl Display for Operand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Operand::Empty =>                write!(f, "Empty"),
+            Operand::Empty => write!(f, "Empty"),
             Operand::Const(val) =>      write!(f, "{}", val),
             Operand::Register(val) =>   write!(f, "reg<{}>", val),
             Operand::Pointer(val) =>    write!(f, "p<{}>", val),
@@ -162,6 +162,7 @@ pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
 }
 
 pub fn dump_instruction_line(line: &InstructionLine) {
+    println!("===== Instructions =====");
     let mut i = 0usize;
     for in_op_pair in line {
         println!("[{}] {}: {}", i, in_op_pair.instruction, in_op_pair.operand);

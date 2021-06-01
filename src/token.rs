@@ -14,9 +14,9 @@ pub enum TokenType {
 impl Display for TokenType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
-            TokenType::Label => write!(f, "Label"),
+            TokenType::Label =>     write!(f, "Label"),
             TokenType::Operation => write!(f, "Operation"),
-            TokenType::Value => write!(f, "Value"),
+            TokenType::Value =>     write!(f, "Value"),
         }
     }
 }
@@ -28,7 +28,7 @@ pub struct Token {
 
 impl Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{{\n\tID: {}\n\tVALUE: {}\n}}", self.id, self.value)
+        write!(f, "{}: {}", self.id, self.value)
     }
 }
 
@@ -70,6 +70,7 @@ pub fn tokenize(content: &str) -> Vec<Token> {
 }
 
 pub fn dump_tokens(tokens: &Vec<Token>) {
+    println!("===== Tokens =====");
     for t in tokens {
         println!("{}", t);
     }
