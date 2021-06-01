@@ -34,11 +34,7 @@ impl Display for Token {
 
 pub fn tokenize(content: &str) -> Vec<Token> {
     let token_pattern = Regex::new(PATTERN).unwrap();
-
-    let register_id_pattern = Regex::new(r"^[0-9]+").unwrap();
-    let constant_pattern = Regex::new(r"^=[0-9]+").unwrap();
-    let pointer_pattern = Regex::new(r"^*[0-9]+").unwrap();
-
+    
     let mut tokens: Vec<Token> = Vec::new();
 
     let captures = token_pattern.captures_iter(content);
@@ -55,40 +51,16 @@ pub fn tokenize(content: &str) -> Vec<Token> {
                 value: a
             });
         }
-        else if b.is_empty() {
-            tokens.push(Token {
-                id: TokenType::Operation,
-                value: a
-            });
-        }
         else {
             tokens.push(Token {
                 id: TokenType::Operation,
                 value: a
             });
-            
-            if register_id_pattern.is_match(&b) {
+
+            if !b.is_empty() {
                 tokens.push(Token {
                     id: TokenType::Value,
                     value:b
-                });
-            }
-            else if constant_pattern.is_match(&b) {
-                tokens.push(Token {
-                    id: TokenType::Value,
-                    value: b
-                });
-            }
-            else if pointer_pattern.is_match(&b) {
-                tokens.push(Token {
-                    id: TokenType::Value,
-                    value: b
-                });
-            }
-            else {
-                tokens.push(Token {
-                    id: TokenType::Value,
-                    value: b
                 });
             }
         }
