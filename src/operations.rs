@@ -22,7 +22,7 @@ lazy_static! {
     };
 }
 
-fn fetch(operand: &Operand, registers: &Vec<i32>) -> i32 {
+fn fetch(operand: &Operand, registers: &[i32]) -> i32 {
     match operand {
         Operand::Const(n) => *n as i32,
         Operand::Register(n) => registers[*n as usize],

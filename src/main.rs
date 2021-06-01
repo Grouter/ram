@@ -24,11 +24,11 @@ mod simulation;
 mod operations;
 
 pub struct ProgramState {
-    pub ic: u32,
-    pub input: Vec<i32>,
-    pub input_pointer: usize,
-    pub output: Vec<i32>,
-    pub registers: Vec<i32>
+    pub output: Vec<i32>,                   // Output Tape
+    pub input_pointer: usize,               // Input Head
+    pub input: [i32; 1],                    // Input Tape
+    pub ic: u32,                            // Instruction Counter
+    pub registers: [i32; REGISTER_COUNT],   // Registers
 }
 
 fn main() {
@@ -37,10 +37,10 @@ fn main() {
 
     let mut state = ProgramState {
         ic: 0,
-        input: vec![4],
+        input: [4; 1],
         input_pointer: 0,
         output: Vec::new(),
-        registers: vec![0; REGISTER_COUNT]
+        registers: [0; REGISTER_COUNT]
     };
 
     let tokens = tokenize(&contents);
