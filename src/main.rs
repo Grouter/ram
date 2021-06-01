@@ -28,10 +28,11 @@ mod parser;
 mod simulation;
 mod operations;
 
+// Input needs to be a Vec because user will want to resize this at runtime later.
 pub struct ProgramState {
     pub output: Vec<i32>,                   // Output Tape
+    pub input: Vec<i32>,                    // Input Tape
     pub input_pointer: usize,               // Input Head
-    pub input: [i32; 1],                    // Input Tape
     pub ic: u32,                            // Instruction Counter
     pub registers: [i32; REGISTER_COUNT],   // Registers
 }
@@ -42,7 +43,7 @@ fn main() {
 
     let mut state = ProgramState {
         ic: 0,
-        input: [4; 1],
+        input: vec![4; 1],
         input_pointer: 0,
         output: Vec::new(),
         registers: [0; REGISTER_COUNT]
