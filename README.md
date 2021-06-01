@@ -12,9 +12,27 @@
 * Download [Rust](https://www.rust-lang.org/)
 
 ## Use
-Currently file loading is hardcoded to load the `instructions.ram` file.
 
-1) To try out the functionality either
+### Instructions file
+
+Currently file loading is hardcoded to load the `instructions.ram` file. <br>
+The current `instructions.ram` program calculates n! from the input tape.
+
+### Input tape
+The input tape is hardcoded for now:
+```rust
+let mut state = ProgramState {
+        ic: 0,
+        input: vec![4; 1],          // <==== The input tape (currently consist of one number 4)
+        input_pointer: 0,
+        output: Vec::new(),
+        registers: [0; REGISTER_COUNT]
+    };
+```
+
+### Writing code
+
+1) To write code either:
     * modify the `instructions.ram` file
     * rewrite the hardcoded value in `main.rs` to load other file.
 
@@ -22,6 +40,8 @@ Currently file loading is hardcoded to load the `instructions.ram` file.
 ```bash
 cargo run
 ```
+
+### Outputs
 
 To get more verbose outputs modify these values in `main.rs`
 ```rust
