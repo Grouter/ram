@@ -29,7 +29,7 @@ To try out the functionality either
 | READ        | *reg    | Read value from input tape to register (indirectly) |
 | WRITE       | reg     | Writes a value from register to the output tape     |
 | JUMP        | label   | Jumps to a label                                    |
-| JGZERO      | label   | Jumps to a label (if ACC == 0)                      |
+| JZERO      | label   | Jumps to a label (if ACC == 0)                      |
 
 #### Explanations
 1) `reg` = Index of a register
