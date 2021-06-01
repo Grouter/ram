@@ -7,12 +7,29 @@
 * [ ] TUI and editor
 * [ ] Complexity calculation (logarithmic)
 
+## Before Use (Dependencies)
+* Download [Rust](https://www.rust-lang.org/)
+
 ## Use
 Currently file loading is hardcoded to load the `instructions.ram` file.
 
-To try out the functionality either
-* modify the `instructions.ram` file
-* rewrite the hardcoded value in `main.rs` to load other file.
+1) To try out the functionality either
+    * modify the `instructions.ram` file
+    * rewrite the hardcoded value in `main.rs` to load other file.
+
+2) Run the program:
+```bash
+cargo run
+```
+
+To get more verbose outputs modify these values in `main.rs`
+```rust
+pub const   VERBOSE_MODE: bool =            true;
+pub const   DUMP_REGISTERS: bool =          false;
+const       DUMP_TOKENS: bool =             false;
+const       DUMP_INSTRUCTION_LINE: bool =   false;
+pub const   STEP_DEBUG: bool =              false;
+```
 
 ## Commands
 
