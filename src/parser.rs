@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::fmt::Display;
-
 use regex::Regex;
 
 use crate::token::{Token, TokenType};
@@ -24,10 +23,10 @@ impl Operand {
     pub fn to_number(&self) -> u32 {
         match self {
             Operand::Empty => panic!("Cannot convert Empty to a number"),
-            Operand::Const(n) => *n,
+            Operand::Const(n) =>    *n,
             Operand::Register(n) => *n,
-            Operand::Pointer(n) => *n,
-            Operand::Jump(n) => *n,
+            Operand::Pointer(n) =>  *n,
+            Operand::Jump(n) =>     *n,
         }
     }
 }
@@ -35,28 +34,29 @@ impl Operand {
 impl Display for Operand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Operand::Empty => write!(f, "Empty"),
-            Operand::Const(val) => write!(f, "{}", val),
-            Operand::Register(val) => write!(f, "reg<{}>", val),
-            Operand::Pointer(val) => write!(f, "p<{}>", val),
-            Operand::Jump(val) => write!(f, "jump<{}>", val),
+            Operand::Empty =>                write!(f, "Empty"),
+            Operand::Const(val) =>      write!(f, "{}", val),
+            Operand::Register(val) =>   write!(f, "reg<{}>", val),
+            Operand::Pointer(val) =>    write!(f, "p<{}>", val),
+            Operand::Jump(val) =>       write!(f, "jump<{}>", val),
         }
     }
 }
 
-pub fn parse(tokens: &Vec<Token>, labels: &mut HashMap<String, u32>) -> InstructionLine {
+pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
     let mut instruction_line: InstructionLine = Vec::new();
 
-    let register_id_pattern = Regex::new(r"^[0-9]+").unwrap();
-    let constant_pattern = Regex::new(r"^=[0-9]+").unwrap();
-    let pointer_pattern = Regex::new(r"^*[0-9]+").unwrap();
-    let label_pattern = Regex::new(r"^[a-zA-Z]\w*").unwrap();
+    let register_id_pattern =   Regex::new(r"^[0-9]+").unwrap();
+    let constant_pattern =      Regex::new(r"^=[0-9]+").unwrap();
+    let pointer_pattern =       Regex::new(r"^*[0-9]+").unwrap();
+    let label_pattern =         Regex::new(r"^[a-zA-Z]\w*").unwrap();
 
     fn get_number(s: &str) -> u32 {
         s.parse::<u32>().expect(&format!("Invalid number: {}", s))
     }
 
-    let mut label_lookup: Vec<&String> = Vec::new();
+    let mut labels: HashMap<String, u32> = HashMap::new();  // Label to instruction map
+    let mut label_lookup: Vec<&String> = Vec::new();        // Label to Label ID (index)
 
     // Fetch all labels and create a label lookup "table". 
     // This only registers label and its ID (as index).
