@@ -3,6 +3,7 @@
 ## TODO
 * [ ] HALT
 * [ ] JGZERO
+* [ ] Simulate register access times
 * [ ] Grammars
 * [ ] TUI and editor
 * [ ] Complexity calculation (logarithmic)
