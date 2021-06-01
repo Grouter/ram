@@ -20,13 +20,13 @@ pub enum Operand {
 }
 
 impl Operand {
-    pub fn to_number(&self) -> u32 {
+    pub fn to_number(&self) -> Result<u32, ()> {
         match self {
-            Operand::Empty => panic!("Cannot convert Empty to a number"),
-            Operand::Const(n) =>    *n,
-            Operand::Register(n) => *n,
-            Operand::Pointer(n) =>  *n,
-            Operand::Jump(n) =>     *n,
+            Operand::Empty => Err(()),
+            Operand::Const(n) =>    Ok(*n),
+            Operand::Register(n) => Ok(*n),
+            Operand::Pointer(n) =>  Ok(*n),
+            Operand::Jump(n) =>     Ok(*n),
         }
     }
 }
@@ -118,11 +118,11 @@ pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
                         op = Operand::Jump(id as u32);
                     }
                     else {
-                        panic!("Invalid Jump location");
+                        panic!(format!("Invalid Jump location {}", operand_token.value));
                     }
                 }
                 else {
-                    panic!("Invalid operand!");
+                    panic!("Invalid operand {}", operand_token.value);
                 }
 
                 // Next token is already decoded. So skip it.

@@ -45,7 +45,8 @@ pub fn load(operand: &Operand, state: &mut ProgramState) {
 
 pub fn read(operand: &Operand, state: &mut ProgramState) {
 
-    let register = operand.to_number() as usize;
+    let register = operand.to_number()
+        .expect("READ needs a numerical operand") as usize;
 
     if state.input_pointer >= state.input.len() {
         debug_log!("[READ] input tape head is out of bounds... Reading 0.");
@@ -60,7 +61,8 @@ pub fn read(operand: &Operand, state: &mut ProgramState) {
 }
 
 pub fn store(operand: &Operand, state: &mut ProgramState) {
-    let register = operand.to_number() as usize;
+    let register = operand.to_number()
+        .expect("STORE needs a numerical operand") as usize;
 
     debug_log!("[STORE] {} to register {}", state.registers[0], register);
     state.registers[register] = state.registers[0];
@@ -99,7 +101,7 @@ pub fn div(operand: &Operand, state: &mut ProgramState) {
 }
 
 pub fn jzero(operand: &Operand, state: &mut ProgramState) {
-    let index = operand.to_number();
+    let index = operand.to_number().unwrap();
 
     if state.registers[0] == 0 {
         debug_log!("[JZERO] Jumping to {}", index);
@@ -112,7 +114,7 @@ pub fn jzero(operand: &Operand, state: &mut ProgramState) {
 }
 
 pub fn jump(operand: &Operand, state: &mut ProgramState) {
-    let index = operand.to_number();
+    let index = operand.to_number().unwrap();
 
     debug_log!("[JUMP] Jumping to {}", index);
     
