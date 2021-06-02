@@ -31,7 +31,9 @@ fn fetch(operand: &Operand, registers: &[i32]) -> i32 {
 
             registers[register as usize]
         },
-        _ => panic!(format!("Cannot fetch a value from {}", operand))
+        _ => {
+            panic!("Cannot fetch a value from {}", operand);
+        }
     }
 }
 
@@ -65,6 +67,7 @@ pub fn store(operand: &Operand, state: &mut ProgramState) {
         .expect("STORE needs a numerical operand") as usize;
 
     debug_log!("[STORE] {} to register {}", state.registers[0], register);
+    
     state.registers[register] = state.registers[0];
 }
 

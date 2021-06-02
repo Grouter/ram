@@ -1,11 +1,11 @@
 use std::io::stdin;
 use std::time::Instant;
 
+use crate::parser::InOpPair;
 use crate::{ProgramState, DUMP_REGISTERS, STEP_DEBUG, VERBOSE_MODE};
-use crate::parser::InstructionLine;
 use crate::operations::FUNCS_LOOKUP;
 
-pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
+pub fn simulate(line: &[InOpPair], state: &mut ProgramState) {
 
     if VERBOSE_MODE {
         println!("===== Simulation =====")
@@ -37,15 +37,12 @@ pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
         state.ic += 1;
 
         if DUMP_REGISTERS {
-            let mut i = 0usize;
-            for r in &state.registers {
-                println!("[{}] {}", i, r);
-                i += 1;
+            for (i, val) in state.registers.iter().enumerate() {
+                println!("[{}] {}", i, val);
             }
         }
 
         if STEP_DEBUG {
-
             let mut buff: String = String::new();
             stdin().read_line(&mut buff).expect("Err");
         }
@@ -60,16 +57,12 @@ pub fn simulate(line: &InstructionLine, state: &mut ProgramState) {
     );
 
     println!("INPUT:");
-    let mut i = 0usize;
-    for r in &state.input {
-        println!("[{}] {}", i, r);
-        i += 1;
+    for (i, val) in state.input.iter().enumerate() {
+        println!("[{}] {}", i, val);
     }
 
     println!("OUTPUT:");
-    let mut i = 0usize;
-    for r in &state.output {
-        println!("[{}] {}", i, r);
-        i += 1;
+    for (i, val) in state.output.iter().enumerate() {
+        println!("[{}] {}", i, val);
     }
 }

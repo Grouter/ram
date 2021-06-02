@@ -71,7 +71,7 @@ pub fn tokenize(content: &str) -> Vec<Token> {
     tokens
 }
 
-pub fn dump_tokens(tokens: &Vec<Token>) {
+pub fn dump_tokens(tokens: &[Token]) {
     println!("===== Tokens =====");
     for t in tokens {
         println!("{}", t);

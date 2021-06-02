@@ -4,8 +4,6 @@ use regex::Regex;
 
 use crate::token::{Token, TokenType};
 
-pub type InstructionLine = Vec<InOpPair>;
-
 pub struct InOpPair {
     pub instruction: String,
     pub operand: Operand
@@ -43,8 +41,8 @@ impl Display for Operand {
     }
 }
 
-pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
-    let mut instruction_line: InstructionLine = Vec::new();
+pub fn parse(tokens: &[Token]) -> Vec<InOpPair> {
+    let mut instruction_line: Vec<InOpPair> = Vec::new();
 
     let register_id_pattern =   Regex::new(r"^[0-9]+").unwrap();
     let constant_pattern =      Regex::new(r"^=[0-9]+").unwrap();
@@ -52,7 +50,7 @@ pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
     let label_pattern =         Regex::new(r"^[a-zA-Z]\w*").unwrap();
 
     fn get_number(s: &str) -> u32 {
-        s.parse::<u32>().expect(&format!("Invalid number: {}", s))
+        s.parse::<u32>().unwrap_or_else(|_| panic!("Invalid number: {}", s))
     }
 
     let mut labels: HashMap<String, u32> = HashMap::new();  // Label to instruction map
@@ -62,9 +60,7 @@ pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
     // This only registers label and its ID (as index).
     // The real label to instruction mapping will be done in instruction decoding,
     // because we don't know yet how many instruction we will have and so we cannot map it properly here.
-    for i in 0..tokens.len() {
-        let token = &tokens[i];
-
+    for token in tokens {
         if token.id == TokenType::Label {
             label_lookup.push(&token.value);
         }
@@ -118,7 +114,7 @@ pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
                         op = Operand::Jump(id as u32);
                     }
                     else {
-                        panic!(format!("Invalid Jump location {}", operand_token.value));
+                        panic!("Cannot register {} as a jump location", operand_token.value);
                     }
                 }
                 else {
@@ -161,11 +157,9 @@ pub fn parse(tokens: &Vec<Token>) -> InstructionLine {
     instruction_line
 }
 
-pub fn dump_instruction_line(line: &InstructionLine) {
+pub fn dump_instruction_line(line: &[InOpPair]) {
     println!("===== Instructions =====");
-    let mut i = 0usize;
-    for in_op_pair in line {
+    for (i, in_op_pair) in line.iter().enumerate() {
         println!("[{}] {}: {}", i, in_op_pair.instruction, in_op_pair.operand);
-        i += 1;
     }
 }
