@@ -8,19 +8,23 @@ pub type OpFn = fn(&Operand, &mut ProgramState);
 lazy_static! {
     pub static ref FUNCS_LOOKUP: HashMap<&'static str, OpFn> = {
         let mut map = HashMap::new();
-        map.insert("LOAD",  load as OpFn);
-        map.insert("STORE", store as OpFn);
-        map.insert("READ",  read as OpFn);
-        map.insert("ADD",   add as OpFn);
-        map.insert("SUB",   sub as OpFn);
-        map.insert("MUL",   mul as OpFn);
-        map.insert("DIV",   div as OpFn);
-        map.insert("JZERO", jzero as OpFn);
-        map.insert("JUMP",  jump as OpFn);
-        map.insert("WRITE", write as OpFn);
+        map.insert("LOAD",   load as OpFn);
+        map.insert("STORE",  store as OpFn);
+        map.insert("READ",   read as OpFn);
+        map.insert("ADD",    add as OpFn);
+        map.insert("SUB",    sub as OpFn);
+        map.insert("MUL",    mul as OpFn);
+        map.insert("DIV",    div as OpFn);
+        map.insert("JZERO",  jzero as OpFn);
+        map.insert("JGZERO", jgzero as OpFn);
+        map.insert("JUMP",   jump as OpFn);
+        map.insert("WRITE",  write as OpFn);
+        map.insert("HALT",   halt as OpFn);
         map
     };
 }
+
+// TODO: there is a lot of boiler plate for each operation...
 
 fn fetch(operand: &Operand, registers: &[i32]) -> i32 {
     match operand {
@@ -116,6 +120,19 @@ pub fn jzero(operand: &Operand, state: &mut ProgramState) {
     }
 }
 
+pub fn jgzero(operand: &Operand, state: &mut ProgramState) {
+    let index = operand.to_number().unwrap();
+
+    if state.registers[0] > 0 {
+        debug_log!("[JGZERO] Jumping to {}", index);
+
+        state.ic = index - 1;
+    }
+    else {
+        debug_log!("[JZERO] Condition not met");
+    }
+}
+
 pub fn jump(operand: &Operand, state: &mut ProgramState) {
     let index = operand.to_number().unwrap();
 
@@ -130,4 +147,8 @@ pub fn write(operand: &Operand, state: &mut ProgramState) {
     debug_log!("[WRITE] {}", value);
 
     state.output.push(value);
+}
+
+pub fn halt(operand: &Operand, state: &mut ProgramState) {
+    state.exit_state = true;
 }

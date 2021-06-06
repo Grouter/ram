@@ -35,6 +35,7 @@ pub struct ProgramState {
     pub input_pointer: usize,               // Input Head
     pub ic: u32,                            // Instruction Counter
     pub registers: [i32; REGISTER_COUNT],   // Registers
+    pub exit_state: bool                    // Should program exit
 }
 
 fn main() {
@@ -46,7 +47,8 @@ fn main() {
         input: vec![4; 1],
         input_pointer: 0,
         output: Vec::new(),
-        registers: [0; REGISTER_COUNT]
+        registers: [0; REGISTER_COUNT],
+        exit_state: false
     };
 
     let tokens = tokenize(&contents);

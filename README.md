@@ -1,8 +1,8 @@
 # Random Access Machine
 
 ## TODO
-* [ ] HALT
-* [ ] JGZERO
+* [x] HALT
+* [x] JGZERO
 * [ ] Simulate register access times
 * [ ] Grammars (current syntax error checking is very bad)
 * [ ] TUI and editor

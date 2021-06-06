@@ -34,6 +34,10 @@ pub fn simulate(line: &[InOpPair], state: &mut ProgramState) {
             None => println!("Unknown instruction: {}", in_op_pair.instruction)
         }
 
+        if state.exit_state {
+            break;
+        }
+
         state.ic += 1;
 
         if DUMP_REGISTERS {
