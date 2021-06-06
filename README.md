@@ -22,12 +22,13 @@ The current `instructions.ram` program calculates n! from the input tape.
 The input tape is hardcoded for now:
 ```rust
 let mut state = ProgramState {
-        ic: 0,
-        input: vec![4; 1],          // <==== The input tape (currently consist of one number 4)
-        input_pointer: 0,
-        output: Vec::new(),
-        registers: [0; REGISTER_COUNT]
-    };
+    ic: 0,
+    input: vec![4; 1],          // <==== The input tape (currently consist of one number 4)
+    input_pointer: 0,
+    output: Vec::new(),
+    registers: [0; REGISTER_COUNT],
+    exit_state: false
+};
 ```
 
 ### Writing code
